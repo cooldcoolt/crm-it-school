@@ -1,5 +1,6 @@
 package Main.DaoFactoryUtil;
 
+import Main.CrudDao;
 import Main.ManagerDao;
 import Main.MentorDao;
 import Main.StudentDao;
@@ -19,17 +20,55 @@ public abstract class DaoFactory {
             e.printStackTrace();
         }
     }
+    private static ManagerDao managerDao;
+    private static StudentDao studentDao;
+    private static MentorDao mentorDao;
 
-    public static ManagerDao getManagerDaoSql() {
-        return new ManagerImpl();
+    public static CrudDao<?> autowired (String qualifier, String scope ) {
+        if (!scope.equals("singleton") && !scope.equals("prototype")) {
+            throw new RuntimeException("Invalid scope of bean: " + scope);
+
+        }
+        switch (qualifier) {
+            case "ManagerDao":
+                return getManagerDaoSql(scope);
+
+            case "StudentDao":
+                return getStudentDaoSql(scope);
+            default:
+                throw new RuntimeException("Can not find bean for autowiring: " + qualifier);
+        }
     }
 
-    public static StudentDao getStudentDaoSql() {
-        return new StudentImpl();
+    private static ManagerDao getManagerDaoSql(String scope) {
+      if (scope.equals("prototype")){
+          return new ManagerImpl();
+      }
+      if (managerDao == null) {
+          managerDao = new ManagerImpl();
+        }
+        return managerDao;
     }
 
-    public static MentorDao getMentorDaoSql() {
-        return new MentorImp();
+
+    private static StudentDao getStudentDaoSql(String scope) {
+      if (scope.equals("prototype")) {
+          return new StudentImpl();
+      }
+      if (studentDao == null){
+          studentDao = new StudentImpl();
+      }
+      return studentDao;
+    }
+
+    public static MentorDao getMentorDaoSql(String scope) {
+        if (scope.equals("prototype")){
+            return new MentorImp();
+        }
+        if (mentorDao == null){
+            mentorDao = new MentorImp();
+        }
+        return mentorDao;
     }
 }
 

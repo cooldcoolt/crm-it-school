@@ -3,6 +3,7 @@ package Main;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import Main.DaoFactoryUtil.Error_LOG;
 
 public interface CrudDao<Model> {
     Model save(Model model);
@@ -18,7 +19,9 @@ public interface CrudDao<Model> {
     }
 
     default void close(AutoCloseable closeable) {
+
         try {
+            Error_LOG.info(getClass().getSimpleName(),closeable.getClass().getSimpleName(),"Closing: ");
             System.out.println(getClass().getSimpleName());
             closeable.close();
             System.out.println((getClass().getSimpleName()));
