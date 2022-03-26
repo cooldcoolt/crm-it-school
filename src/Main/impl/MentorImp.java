@@ -1,6 +1,7 @@
 package Main.impl;
 
 import Main.MentorDao;
+import Model.Manager;
 import Model.Mentor;
 import Model.Student;
 
@@ -47,13 +48,13 @@ public class MentorImp implements MentorDao {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
-        Mentor savedMentor =null;
+        Mentor savedMentor = null;
 
-        try{
+        try {
             connection = getConnection();
 
-            String createDdlQuery = "INSERT INTO tb_mentor (fist_name, last_name, email, phone_number, dob, salary, date_created)"+
-                                    "VALUES (?, ?,  ?, ?, ?, MONEY(?), ?)";
+            String createDdlQuery = "INSERT INTO tb_mentor (first_name, last_name, email, phone_number, dob, salary, date_created)" +
+                    "VALUES (?, ?,  ?, ?, ?, MONEY(?), ?)";
 
             preparedStatement = connection.prepareStatement(createDdlQuery);
             preparedStatement.setString(1, mentor.getFirst_name());
@@ -61,10 +62,19 @@ public class MentorImp implements MentorDao {
             preparedStatement.setString(3, mentor.getEmail());
             preparedStatement.setString(4, mentor.getPhone_number());
             preparedStatement.setDate(5, Date.valueOf(mentor.getDob()));
-            preparedStatement.setString(6, (mentor.getSalary()  + "").replace(".", ","));
+            preparedStatement.setString(6, (mentor.getSalary() + "").replace(".", ","));
+            preparedStatement.setTimestamp(7, Timestamp.valueOf(mentor.getDate_created()));
 
-            preparedStatement.executeQuery();
+            System.out.println("createDdlQuery: running");
+            preparedStatement.execute();
+            System.out.println("createDdlQuery: - OK ");
             close(preparedStatement);
+
+
+            String readDdlQuery_Mentor = "SELECT * FROM tb_mentor ORDER BY id DESC LIMIT 1";
+            preparedStatement = connection.prepareStatement(readDdlQuery_Mentor);
+            resultSet = preparedStatement.executeQuery();
+            resultSet.next();
 
             savedMentor = new Mentor();
 
@@ -76,19 +86,47 @@ public class MentorImp implements MentorDao {
             savedMentor.setEmail(resultSet.getString("email"));
             savedMentor.setPhone_number(resultSet.getString("phone_number"));
             savedMentor.setDob(resultSet.getDate("dob").toLocalDate());
-            savedMentor.setDate_created(resultSet.getTimestamp("date_created").toLocalDateTime())
+            savedMentor.setDate_created(resultSet.getTimestamp("date_created").toLocalDateTime());
 
         } catch (SQLException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             close(preparedStatement);
             close(connection);
             close(resultSet);
         }
-
+        return savedMentor;
+    }
 
     @Override
     public Mentor findById(Long id) {
-        return null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        Mentor mentor = null;
+        try {
+            connection = getConnection();
+            String readQuery = "SELECT * FROM tb_managers WHERE id = ?";
+            preparedStatement = connection.prepareStatement(readQuery);
+            preparedStatement.setLong(1, id);
+
+            resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+
+
+            mentor = new Mentor();
+            mentor.setId(resultSet.getLong("id"));
+            mentor.setFirst_name(resultSet.getString("first_name"));
+            mentor.setLast_name(resultSet.getString("last_name"));
+            mentor.setEmail(resultSet.getString("email"));
+            mentor.setPhone_number(resultSet.getString("phone_number"));
+            mentor.setSalary(Double.valueOf(resultSet.getString("salary").replaceAll("[^\\d\\.]+", "")));
+            mentor.setDob(resultSet.getDate("dob").toLocalDate());
+            mentor.setDate_created(resultSet.getTimestamp("date_created").toLocalDateTime());
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        return mentor;
     }
 }

@@ -1,8 +1,10 @@
 package Main.DaoFactoryUtil;
 
 import Main.ManagerDao;
+import Main.MentorDao;
 import Main.StudentDao;
 import Main.impl.ManagerImpl;
+import Main.impl.MentorImp;
 import Main.impl.StudentImpl;
 
 public abstract class DaoFactory {
@@ -21,9 +23,14 @@ public abstract class DaoFactory {
     public static ManagerDao getManagerDaoSql() {
         return new ManagerImpl();
     }
+
     public static StudentDao getStudentDaoSql() {
-        return  new StudentImpl();
+        return new StudentImpl();
     }
+
+    public static MentorDao getMentorDaoSql() {
+        return new MentorImp();
     }
+}
 
 
