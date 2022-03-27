@@ -5,7 +5,7 @@ public final class Course extends BaseEntyty {
     private Double price;
     private CourseFormat courseFormat;
 
-    public Course(Long id) {
+    public Course() {
         super(id);
     }
 

@@ -1,10 +1,13 @@
 package Main.impl;
 
+import Main.DaoFactoryUtil.Error_LOG;
 import Main.StudentDao;
 import Model.Manager;
 import Model.Student;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.postgresql.util.JdbcBlackHole.close;
 
@@ -131,8 +134,50 @@ public class StudentImpl implements StudentDao {
         }
         return student;
     }
-}
 
+    @Override
+    public List<Student> findAll() {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        List<Student> students = new ArrayList<>();
+
+        try {
+            Error_LOG.info(this.getClass().getSimpleName() + " findAll()", Connection.class.getSimpleName(), "Establishing connection");
+            connection = getConnection();
+
+            String readQueryStudent = "SELECT * FROM tb_student;";
+
+            preparedStatement = connection.prepareStatement(readQueryStudent);
+
+            resultSet = preparedStatement.executeQuery();
+
+            for (int i = 0; i <= students.size() && resultSet.next(); i++) {
+
+                Student student = new Student();
+                student.setId(resultSet.getLong("id"));
+                student.setFirst_name(resultSet.getString("first_name"));
+                student.setLast_name(resultSet.getString("last_name"));
+                student.setEmail(resultSet.getString("email"));
+                student.setPhone_number(resultSet.getString("phone_number"));
+
+                student.setDob(Date.valueOf(resultSet.getDate("dob").toLocalDate()));
+                student.setDate_created(resultSet.getTimestamp("date_created").toLocalDateTime());
+                students.add(student);
+            }
+            return students;
+        } catch (Exception e) {
+            Error_LOG.error(this.getClass().getSimpleName(), e.getStackTrace()[0].getClassName(), e.getMessage());
+            e.printStackTrace();
+        } finally {
+            close(resultSet);
+            close(preparedStatement);
+            close(connection);
+        }
+        return null;
+    }
+}
 
 
 

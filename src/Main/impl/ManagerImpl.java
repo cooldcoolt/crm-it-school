@@ -1,9 +1,12 @@
 package Main.impl;
 
+import Main.DaoFactoryUtil.Error_LOG;
 import Main.ManagerDao;
 import Model.Manager;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ManagerImpl implements ManagerDao {
     public ManagerImpl() {
@@ -130,7 +133,46 @@ public class ManagerImpl implements ManagerDao {
         return manager;
     }
 
+    @Override
+    public List<Manager> findAll() {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
+        List<Manager> managers = new ArrayList<>();
+        try {
+            Error_LOG.info(this.getClass().getSimpleName() + " findAll()", Connection.class.getSimpleName(), "Establishing connection");
+            connection = getConnection();
+
+            String readQueryFindAll  = "SELECT * FROM tb_managers;";
+            preparedStatement =connection.prepareStatement(readQueryFindAll);
+            resultSet = preparedStatement.executeQuery();
+
+            for (int i = 0; i <= managers.size() && resultSet.next(); i++) {
+                Manager manager = new Manager();
+                manager.setId(resultSet.getLong("id"));
+                manager.setFirst_name(resultSet.getString("first_name"));
+                manager.setLast_name(resultSet.getString("last_name"));
+                manager.setEmail(resultSet.getString("email"));
+                manager.setPhone_number(resultSet.getString("phone_number"));
+                manager.setSalary(Double.parseDouble(resultSet.getString("salary")));
+                manager.setDob(resultSet.getDate("dob").toLocalDate());
+                manager.setDate_created(resultSet.getTimestamp("date_created").toLocalDateTime());
+                managers.add(manager);
+
+            }
+            return managers;
+        }catch (SQLException e ){
+            Error_LOG.error(this.getClass().getSimpleName(), e.getStackTrace()[0].getClassName(), e.getMessage());
+            e.printStackTrace();
+        } finally {
+            close(resultSet);
+            close(preparedStatement);
+            close(connection);
+        }
+        return null;
+
+    }
 
 
     @Override

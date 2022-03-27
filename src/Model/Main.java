@@ -13,11 +13,17 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
-            //Manager manager = new Manager();
-//        Student student = new Student();
-        Mentor mentor = new Mentor();
 
+        ManagerDao managerDao =(ManagerDao) DaoFactory.autowired("ManagerDao", "singleton");
+        Manager manager = new Manager();
+        manager.setFirst_name("Walter");
+        manager.setLast_name("White");
+        manager.setEmail("SayMyName@mail.ru");
+        manager.setPhone_number("+996999001531");
+        manager.setDob(LocalDate.parse("1970-15-03"));
+        manager.setSalary(Double.valueOf("450"));
 
+        managerDao= DaoFactory.getManagerDaoSql("prototype");
 
 
         /*System.out.print("First name: ");
@@ -71,31 +77,8 @@ public class Main {
 
         ////////////////////////MENTOR/////////////////
 
-        System.out.println("Mentor first_name: ");
-        mentor.setFirst_name(scan.nextLine());
+        //
 
-        System.out.println("Mentor last_name: ");
-        mentor.setLast_name(scan.nextLine());
-
-        System.out.println("Mentor email: ");
-        mentor.setEmail(scan.nextLine());
-
-        System.out.println("Mentor phone number: ");
-        mentor.setPhone_number(scan.nextLine());
-
-        System.out.println("Mentor birthday: ");
-        mentor.setDob(LocalDate.parse(scan.nextLine()));
-
-        System.out.println("Mentor salary: ");
-        mentor.setSalary(scan.nextDouble());
-
-        MentorImp mentorImp = new MentorImp();
-        mentorImp.save(mentor);
-
-        ///FIND BY ID///////////
-
-        MentorDao mentorDao = DaoFactory.getMentorDaoSql();
-        System.out.println(mentorDao.findById(1L));
 
 
 

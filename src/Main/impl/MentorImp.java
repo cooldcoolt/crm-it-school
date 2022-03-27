@@ -1,11 +1,14 @@
 package Main.impl;
 
+import Main.DaoFactoryUtil.Error_LOG;
 import Main.MentorDao;
-import Model.Manager;
+//import Model.Mentors;
 import Model.Mentor;
 import Model.Student;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MentorImp implements MentorDao {
     public MentorImp() {
@@ -128,5 +131,45 @@ public class MentorImp implements MentorDao {
 
         }
         return mentor;
+    }
+
+    @Override
+    public List<Mentor> findAll() {
+
+        Connection connection =null;
+        PreparedStatement preparedStatement =null;
+        ResultSet resultSet =null;
+
+        List<Mentor> mentors = new ArrayList<>();
+       try{
+           Error_LOG.info(this.getClass().getSimpleName() + " findAll()", Connection.class.getSimpleName(), "Establishing connection");
+            connection = getConnection();
+            String readQueryMentor = "SELECT * FROM tb_mentors;";
+            preparedStatement = connection.prepareStatement(readQueryMentor);
+            resultSet = preparedStatement.executeQuery();
+
+           for (int i = 0; i <= mentors.size() && resultSet.next(); i++) {
+
+               Mentor mentor = new Mentor();
+
+               mentor.setId(resultSet.getLong("id"));
+               mentor.setFirst_name(resultSet.getString("first_name"));
+               mentor.setLast_name(resultSet.getString("last_name"));
+               mentor.setEmail(resultSet.getString("email"));
+               mentor.setPhone_number(resultSet.getString("phone_number"));
+               mentor.setSalary(Double.valueOf(resultSet.getString("salary").replaceAll("[^\\d\\.]", "")));
+               mentor.setDob(resultSet.getDate("dob").toLocalDate());
+               mentor.setDate_created(resultSet.getTimestamp("date_created").toLocalDateTime());
+               mentors.add(mentor);
+
+
+           }
+           return mentors;
+
+       }catch (SQLException e){
+           Error_LOG.error(this.getClass().getSimpleName(), e.getStackTrace()[0].getClassName(), e.getMessage());
+           e.printStackTrace();
+       }
+        return null;
     }
 }

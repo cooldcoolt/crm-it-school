@@ -1,12 +1,8 @@
 package Main.DaoFactoryUtil;
 
-import Main.CrudDao;
-import Main.ManagerDao;
-import Main.MentorDao;
-import Main.StudentDao;
-import Main.impl.ManagerImpl;
-import Main.impl.MentorImp;
-import Main.impl.StudentImpl;
+import Main.*;
+import Main.impl.*;
+import Model.Group;
 
 public abstract class DaoFactory {
 
@@ -23,6 +19,9 @@ public abstract class DaoFactory {
     private static ManagerDao managerDao;
     private static StudentDao studentDao;
     private static MentorDao mentorDao;
+    private static GroupDao groupDao;
+    private static CourseFormatDao courseFormatDao;
+    private static CourseDao courseDao;
 
     public static CrudDao<?> autowired (String qualifier, String scope ) {
         if (!scope.equals("singleton") && !scope.equals("prototype")) {
@@ -35,6 +34,16 @@ public abstract class DaoFactory {
 
             case "StudentDao":
                 return getStudentDaoSql(scope);
+
+            case "MentorDao":
+                return getMentorDaoSql(scope);
+            case "GroupDao":
+                return getGroupDaoSql(scope);
+            case "CourseFormatDao":
+                return getCourseFormatDaoSql(scope);
+            case "CourseDao":
+                return  getCourseDaoSql(scope);
+
             default:
                 throw new RuntimeException("Can not find bean for autowiring: " + qualifier);
         }
@@ -70,6 +79,35 @@ public abstract class DaoFactory {
         }
         return mentorDao;
     }
+    public static GroupDao getGroupDaoSql(String scope){
+        if(scope.equals("prototype")){
+            return new GroupImpl();
+        }
+        if(groupDao ==null){
+            groupDao = new GroupImpl();
+
+        }
+        return groupDao;
+    }
+    public static CourseFormatDao getCourseFormatDaoSql(String scope){
+        if(scope.equals("prototype")){
+            return new CourseFormatImpl();
+        }
+        if(courseFormatDao == null){
+            courseFormatDao = new CourseFormatImpl();
+        }
+        return courseFormatDao;
+    }
+    public static CourseDao getCourseDaoSql(String scope){
+        if(scope.equals("prototype")) {
+            return new CourseImpl();
+        }
+        if(courseDao == null){
+            courseDao = new CourseImpl();
+        }
+        return  courseDao;
+    }
+
 }
 
 
