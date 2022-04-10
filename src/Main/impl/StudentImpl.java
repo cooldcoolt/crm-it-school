@@ -177,6 +177,11 @@ public class StudentImpl implements StudentDao {
         }
         return null;
     }
+
+    @Override
+    public List<Student> saveAll(List<Student> students) {
+        return null;
+    }
 }
 
 

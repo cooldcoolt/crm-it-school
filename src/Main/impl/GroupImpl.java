@@ -221,5 +221,10 @@ public class GroupImpl implements GroupDao {
         return null;
     }
 
+    @Override
+    public List<Group> saveAll(List<Group> groups) {
+        return null;
+    }
+
 
 }

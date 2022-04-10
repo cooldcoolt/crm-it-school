@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 import Main.DaoFactoryUtil.Error_LOG;
 
@@ -13,6 +14,7 @@ public interface CrudDao<Model> {
     Model findById(Long id);
 
     List<Model> findAll();
+    List<Model> saveAll(List<Model> models);
 
     default Connection getConnection() throws SQLException {
         final String URL = "jdbc:postgresql://localhost:5432/crm";

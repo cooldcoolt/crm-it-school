@@ -1,12 +1,14 @@
 package Model;
 
 public final class Course extends BaseEntyty {
+
     private String name;
     private Double price;
     private CourseFormat courseFormat;
 
+
     public Course() {
-        super(id);
+        super();
     }
 
     public Course(Long id, String name, Double price, CourseFormat courseFormat) {
@@ -14,6 +16,7 @@ public final class Course extends BaseEntyty {
         this.name = name;
         this.price = price;
         this.courseFormat = courseFormat;
+
     }
 
     public String getName() {
@@ -39,6 +42,9 @@ public final class Course extends BaseEntyty {
     public void setCourseFormat(CourseFormat courseFormat) {
         this.courseFormat = courseFormat;
     }
+
+
+
 
     @Override
     public String toString() {

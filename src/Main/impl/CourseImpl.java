@@ -6,6 +6,8 @@ import Model.Course;
 import Model.CourseFormat;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CourseImpl implements CourseDao {
 
@@ -54,24 +56,25 @@ public class CourseImpl implements CourseDao {
        Course savedCourse = null;
 
        try{
-
+           System.out.println("Esteblishing connection");
            connection = getConnection();
+           System.out.println("CourseFormatImpl");
 
            String createQueryCourse = "INSERT INTO tb_courses ("+
-                   "name, price, date_created, course_format_id)"+
-                   "VALUES (?, ?, ?, ?)";
+                   "name, price, date_created, course_format_id )"+
+                   "VALUES (?, MONEY(?), ?, ?)";
 
            preparedStatement = connection.prepareStatement(createQueryCourse);
            preparedStatement.setString(1,course.getName());
-           preparedStatement.setString(2, String.valueOf(course.getPrice()));
+           preparedStatement.setString(2, (course.getPrice() + "").replace(".", ","));
            preparedStatement.setTimestamp(3,Timestamp.valueOf(course.getDate_created()));
-           preparedStatement.setLong(4,course.getId());
+           preparedStatement.setLong(4, course.getCourseFormat().getId());
 
            preparedStatement.execute();
            close(preparedStatement);
 
-           String readQueryCourse = "SELECT c.id, c.name, c.price, c.date_created, f.* "+
-                   "FROM tb_course AS c "+
+           String readQueryCourse = "SELECT c.id AS course_id, c.name, c.price, c.date_created, f.* "+
+                   "FROM tb_courses AS c "+
                    "JOIN tb_course_format AS f "+
                    "ON c.course_format_id = f.id "+
                    "ORDER BY c.id DESC LIMIT 1";
@@ -82,7 +85,7 @@ public class CourseImpl implements CourseDao {
            resultSet.next();
 
            CourseFormat courseFormat = new CourseFormat();
-           courseFormat.setId(resultSet.getLong("f.id"));
+           courseFormat.setId(resultSet.getLong("course_id"));
            courseFormat.setFormat(resultSet.getString("course_format"));
            courseFormat.setIs_online(resultSet.getBoolean("is_online"));
            courseFormat.setLesson_duration(resultSet.getTime("lesson_duration").toLocalTime());
@@ -91,9 +94,10 @@ public class CourseImpl implements CourseDao {
            courseFormat.setLesson_per_week(resultSet.getInt("lesson_per_week"));
 
            savedCourse = new Course();
-           savedCourse.setId(resultSet.getLong("id"));
+           savedCourse.setId(resultSet.getLong("course_id"));
            savedCourse.setName(resultSet.getString("name"));
-           savedCourse.setPrice(Double.parseDouble(resultSet.getString("price")));
+           //savedManager.setSalary(Double.valueOf(resultSet.getString("salary").replaceAll("[^\\d\\. ]+", "")));
+           savedCourse.setPrice(Double.parseDouble(resultSet.getString("price").replaceAll("[^\\d\\. ]+", "")));
            savedCourse.setDate_created(resultSet.getTimestamp("date_created").toLocalDateTime());
            savedCourse.setCourseFormat(courseFormat);
 
@@ -139,7 +143,6 @@ public class CourseImpl implements CourseDao {
             course.setName(resultSet.getString("name"));
             course.setPrice(Double.parseDouble(resultSet.getString("price")));
             course.setDate_created(resultSet.getTimestamp("date_created").toLocalDateTime());
-            CourseFormat courseFormat = new CourseFormat();
 
 
         }catch (SQLException e){
@@ -147,4 +150,121 @@ public class CourseImpl implements CourseDao {
         }
         return course;
     }
+
+    @Override
+    public List<Course> findAll() {
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        List <Course> courses = new ArrayList<>();
+        List <CourseFormat> courseFormats = new ArrayList<>();
+
+        try {
+            Error_LOG.info(this.getClass().getSimpleName() + " findAll()", Connection.class.getSimpleName(), "Establishing connection");
+            connection = getConnection();
+
+            String readQuery = "SELECT c.id AS course_id, c.name, c.price, c.date_created, f.* " +
+                    "FROM tb_courses AS c " +
+                    "JOIN tb_course_format AS f " +
+                    "ON c.course_format_id = f.id ";
+
+
+            preparedStatement = connection.prepareStatement(readQuery);
+
+            resultSet = preparedStatement.executeQuery();
+
+            for (int i = 0; i <= courses.size() && resultSet.next(); i++) {
+                Course course = new Course();
+                course.setId(resultSet.getLong("course_id"));
+                course.setName(resultSet.getString("name"));
+                course.setPrice(Double.parseDouble(resultSet.getString("price").replaceAll("[^\\d.]", "")));
+                courses.add(course);
+            }
+            return courses;
+        } catch (Exception e) {
+            Error_LOG.error(this.getClass().getSimpleName(), e.getStackTrace()[0].getClassName(), e.getMessage());
+            e.printStackTrace();
+        } finally {
+            close(resultSet);
+            close(preparedStatement);
+            close(connection);
+        }
+        return courses;
+
+    }
+
+    @Override
+    public List<Course> saveAll(List<Course> courses) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        List<Course> savedCourse = new ArrayList<>();
+        try {
+
+            connection = getConnection();
+
+            String insertQuery = "INSERT INTO tb_courses (" +
+                    "name, price, date_created, course_format_id )" +
+                    "VALUES (?, MONEY(?), ?, ?)";
+
+            connection.setAutoCommit(false);
+
+            for (int i = 0; i < courses.size(); i++) {
+                Course course = new Course();
+                preparedStatement = connection.prepareStatement(insertQuery);
+
+                preparedStatement.setString(1, course.getName());
+                preparedStatement.setString(2, (course.getPrice() + "").replace(".", ","));
+                preparedStatement.setTimestamp(3, Timestamp.valueOf(course.getDate_created()));
+                preparedStatement.setLong(4, course.getCourseFormat().getId());
+
+
+                preparedStatement.addBatch();
+
+
+                if (i % 20 == 0 || i == courses.size() - 1) {
+                    preparedStatement.executeBatch();
+                    preparedStatement.clearBatch();
+                }
+            }
+            String readQueryCourse = "SELECT c.id AS course_id, c.name, c.price, c.date_created, f.* " +
+                    "FROM tb_courses AS c " +
+                    "JOIN tb_course_format AS f " +
+                    "ON c.course_format_id = f.id " +
+                    "ORDER BY c.id DESC LIMIT 1" + courses.size();
+            close(preparedStatement);
+            preparedStatement = connection.prepareStatement(readQueryCourse);
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+
+                CourseFormat courseFormat = new CourseFormat();
+                courseFormat.setId(resultSet.getLong("course_id"));
+                courseFormat.setFormat(resultSet.getString("course_format"));
+                courseFormat.setIs_online(resultSet.getBoolean("is_online"));
+                courseFormat.setLesson_duration(resultSet.getTime("lesson_duration").toLocalTime());
+                courseFormat.setCourse_duration_weeks(resultSet.getInt("course_duration_weeks"));
+                courseFormat.setDate_created(resultSet.getTimestamp("date_created").toLocalDateTime());
+                courseFormat.setLesson_per_week(resultSet.getInt("lesson_per_week"));
+
+                Course course = new Course();
+                course.setId(resultSet.getLong("course_id"));
+                course.setName(resultSet.getString("name"));
+                //savedManager.setSalary(Double.valueOf(resultSet.getString("salary").replaceAll("[^\\d\\. ]+", "")));
+                course.setPrice(Double.parseDouble(resultSet.getString("price").replaceAll("[^\\d\\. ]+", "")));
+                course.setDate_created(resultSet.getTimestamp("date_created").toLocalDateTime());
+                course.setCourseFormat(courseFormat);
+                savedCourse.add(course);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        close(resultSet);
+        close(preparedStatement);
+        close(connection);
+
+        return courses;
+    }
+
 }

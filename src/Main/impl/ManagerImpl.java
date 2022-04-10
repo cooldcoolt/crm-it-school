@@ -174,6 +174,11 @@ public class ManagerImpl implements ManagerDao {
 
     }
 
+    @Override
+    public List<Manager> saveAll(List<Manager> managers) {
+        return null;
+    }
+
 
     @Override
     public Connection getConnection() throws SQLException {

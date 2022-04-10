@@ -172,4 +172,9 @@ public class MentorImp implements MentorDao {
        }
         return null;
     }
+
+    @Override
+    public List<Mentor> saveAll(List<Mentor> mentors) {
+        return null;
+    }
 }
