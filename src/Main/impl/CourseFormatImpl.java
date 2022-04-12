@@ -8,6 +8,8 @@ import java.sql.*;
 import java.time.LocalTime;
 import java.util.List;
 
+import static java.lang.Long.parseLong;
+
 public class CourseFormatImpl implements CourseFormatDao {
 
     public CourseFormatImpl(){
@@ -121,9 +123,10 @@ public class CourseFormatImpl implements CourseFormatDao {
             connection= getConnection();
 
             String readQueryFindByIdCourseFormat = "SELECT * FROM tb_course_format WHERE id=?";
+
             preparedStatement = connection.prepareStatement(readQueryFindByIdCourseFormat);
             System.out.println("Podozritelno: ");
-            preparedStatement.setLong(1, Long.parseLong("id"));
+            preparedStatement.setLong(1, id);
             System.out.println("OK");
 
 

@@ -3,7 +3,7 @@ package Model.Builder;
 import Model.Course;
 import Model.CourseFormat;
 
-public class CourseBuilder {
+public class  CourseBuilder {
 
     private Long id;
     private String name;

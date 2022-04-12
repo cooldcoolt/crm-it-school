@@ -1,4 +1,4 @@
-package Model;
+package Main;
 import Main.DaoFactoryUtil.DaoFactory;
 import Main.ManagerDao;
 import Main.StudentDao;
@@ -9,6 +9,8 @@ import Main.impl.StudentImpl;
 import Main.CourseFormatDao;
 import Model.Builder.CourseBuilder;
 import Model.Builder.CourseFormatBuilder;
+import Model.Course;
+import Model.CourseFormat;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -21,25 +23,25 @@ public class Main {
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
 
-        CourseFormat courseFormat = CourseFormatBuilder.builder()
-                .format("BOOTCAMP")
-                .course_duration_weeks(3)
-                .lesson_per_week(5)
-                .lesson_duration(LocalTime.of(3,0))
-                .is_online(false)
-                .build();
-        CourseFormatDao courseFormatDao = (CourseFormatDao) DaoFactory.autowired("CourseFormatDao","singleton");
-        courseFormatDao.save(courseFormat);
-
-
-        Course course = CourseBuilder.builder()
-                .name("Java")
-                .price(1500.0)
-                .courseFormat(new CourseFormat())
-                .build();
-
-        CourseDao courseDao = (CourseDao) DaoFactory.autowired("CourseDao", "singleton");
-        courseDao.save(course);
+//        CourseFormat courseFormat = CourseFormatBuilder.builder()
+//                .format("BOOTCAMP")
+//                .course_duration_weeks(3)
+//                .lesson_per_week(5)
+//                .lesson_duration(LocalTime.of(3,0))
+//                .is_online(false)
+//                .build();
+//        CourseFormatDao courseFormatDao = (CourseFormatDao) DaoFactory.autowired("CourseFormatDao","singleton");
+//        courseFormatDao.save(courseFormat);
+//
+//
+//        Course course = CourseBuilder.builder()
+//                .name("Java")
+//                .price(1500.0)
+//                .courseFormat(courseFormatDao.findById(courseFormat.getId()))
+//                .build();
+//
+//        CourseDao courseDao = (CourseDao) DaoFactory.autowired("CourseDao", "singleton");
+//        courseDao.save(course);
 //        List<Course> courseList = new ArrayList<>();
 //        courseList.add(course);
 
@@ -55,22 +57,26 @@ public class Main {
 //        courseFormat.setCourse_duration_weeks(5);
 //        courseFormat.setLesson_duration(LocalTime.ofSecondOfDay(3));
 //        courseFormat.setIs_online(false);
-//        courseFormat.setId(10l);
-//        courseFormatDao.save(courseFormat);
+
+       // courseFormat = courseFormatDao.save(courseFormat);
 
 
+  CourseDao courseDao = (CourseDao) DaoFactory.autowired("CourseDao", "singleton");
+      Course course = new Course();
+//        course.setName("PythonBootcamp");
+//        course.setPrice(160.00);
+//        CourseFormatDao courseFormatDao = (CourseFormatDao) DaoFactory.autowired("CourseFormatDao","singleton");
+//       courseFormatDao.findById(1L);
+//        course.setCourseFormat(courseFormatDao.findById(1l));
+//
+//
+//
+//        System.out.println(course);
+//
+//        System.out.println( courseDao.save(course));
+       // managerDao= DaoFactory.getManagerDaoSql("prototype");
 
-
-
-//  CourseDao courseDao = (CourseDao) DaoFactory.autowired("CourseDao", "singleton");
-//        Course course = new Course();
-//        course.setName("JavaBootCamp");
-//        course.setPrice(150.00);
-//        course.setCourseFormat(courseFormat);
-//        courseDao.save(course);
-//       // managerDao= DaoFactory.getManagerDaoSql("prototype");
-
-    //    System.out.println(courseDao.findAll());
+        System.out.println(courseDao.findAll());
 
 
 

@@ -3,6 +3,7 @@ package Model;
 import java.time.LocalTime;
 
 public final class CourseFormat extends BaseEntyty {
+
     private String format;
     private int course_duration_weeks;
     private LocalTime lesson_duration;

@@ -73,7 +73,8 @@ public class CourseImpl implements CourseDao {
            preparedStatement.execute();
            close(preparedStatement);
 
-           String readQueryCourse = "SELECT c.id AS course_id, c.name, c.price, c.date_created, f.* "+
+           String readQueryCourse = "SELECT c.id AS course_id, c.name, c.price, c.date_created, " +
+                   " f.id, f.course_format, f.is_online, f.lesson_duration, f.course_duration_weeks,f.date_created, f.lesson_per_week "+
                    "FROM tb_courses AS c "+
                    "JOIN tb_course_format AS f "+
                    "ON c.course_format_id = f.id "+
@@ -85,7 +86,7 @@ public class CourseImpl implements CourseDao {
            resultSet.next();
 
            CourseFormat courseFormat = new CourseFormat();
-           courseFormat.setId(resultSet.getLong("course_id"));
+           courseFormat.setId(resultSet.getLong("id"));
            courseFormat.setFormat(resultSet.getString("course_format"));
            courseFormat.setIs_online(resultSet.getBoolean("is_online"));
            courseFormat.setLesson_duration(resultSet.getTime("lesson_duration").toLocalTime());
