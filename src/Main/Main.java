@@ -50,90 +50,29 @@ public class Main {
 
 
 
-//        CourseFormatDao courseFormatDao = (CourseFormatDao) DaoFactory.autowired("CourseFormatDao","singleton");
-//        CourseFormat courseFormat = new CourseFormat();
-//        courseFormat.setFormat("BootCamp");
-//        courseFormat.setLesson_per_week(5);
-//        courseFormat.setCourse_duration_weeks(5);
-//        courseFormat.setLesson_duration(LocalTime.ofSecondOfDay(3));
-//        courseFormat.setIs_online(false);
+       CourseFormatDao courseFormatDao = (CourseFormatDao) DaoFactory.autowired("CourseFormatDao","singleton");
+      CourseFormat courseFormat = new CourseFormat();
+       courseFormat.setFormat("BootCamp");
+   courseFormat.setLesson_per_week(5);
+   courseFormat.setCourse_duration_weeks(5);
+    courseFormat.setLesson_duration(LocalTime.ofSecondOfDay(3));
+   courseFormat.setIs_online(false);
 
-       // courseFormat = courseFormatDao.save(courseFormat);
+      // courseFormat = courseFormatDao.save(courseFormat);
 
 
   CourseDao courseDao = (CourseDao) DaoFactory.autowired("CourseDao", "singleton");
       Course course = new Course();
-//        course.setName("PythonBootcamp");
-//        course.setPrice(160.00);
-//        CourseFormatDao courseFormatDao = (CourseFormatDao) DaoFactory.autowired("CourseFormatDao","singleton");
-//       courseFormatDao.findById(1L);
-//        course.setCourseFormat(courseFormatDao.findById(1l));
+   course.setName("PythonBootcamp");
+     course.setPrice(160.00);
+     course.setCourseFormat(courseFormatDao.findById(1L));
+     course = courseDao.save(course);
+
+        System.out.println(course);
 //
 //
 //
-//        System.out.println(course);
 //
-//        System.out.println( courseDao.save(course));
-       // managerDao= DaoFactory.getManagerDaoSql("prototype");
-
-        System.out.println(courseDao.findAll());
-
-
-
-        /*System.out.print("First name: ");
-        manager.setFirst_name(scan.nextLine());
-
-        System.out.print("Last name: ");
-        manager.setLast_name(scan.nextLine());
-
-        System.out.print("Email: ");
-        manager.setEmail(scan.nextLine());
-
-        System.out.print("Phone number: ");
-        manager.setPhone_number(scan.nextLine());
-
-        System.out.print("Date of birth: ");
-        manager.setDob(LocalDate.parse(scan.nextLine())); // yyyy-MM-dd
-
-        System.out.print("Salary: ");
-        manager.setSalary(scan.nextDouble());
-        System.out.println("Input: " + manager);
-
-     //   FIND BY ID POISK PO ID*/
-       // ManagerDao managerDao = DaoFactory.getManagerDaoSql();
-        //System.out.println("From database: " + managerDao.save(manager));
-        //System.out.println(managerDao.findById(1L));
-        //  System.out.println(managerDao.findById(1L));
-
-        /////////STUDENT////////
-//        System.out.print("Student first name: ");
-//        student.setFirst_name(scan.nextLine());
-//
-//        System.out.print("Student last name: ");
-//        student.setLast_name(scan.nextLine());
-//
-//        System.out.print("Student email: ");
-//        student.setEmail(scan.nextLine());
-//
-//        System.out.print("Student phone number: ");
-//        student.setPhone_number(scan.nextLine());
-//
-//        System.out.print("Student date of Birth: ");
-//        student.setDob(Date.valueOf(LocalDate.parse(scan.nextLine())));
-//        System.out.println("Student input " + student);
-//
-//        StudentImpl studentImp = new StudentImpl();
-//        studentImpl.save(student);
-
-        //FIND BY ID
-        //  StudentDao student = DaoFactory.getStudentDaoSql();
-        //System.out.println(student.findById(2L));
-
-        ////////////////////////MENTOR/////////////////
-
-        //
-
-
 
 
     }
